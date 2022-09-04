@@ -63,10 +63,16 @@ export default {
         originX: 'left',
         originY: 'top'
     });
+    this.$store.commit('pushDial', 
+        {'group': group}
+    );
 
-    this.canvas.add(group);
+    for (var i = 0; i < this.$store.state.dials.length; i++) {
+        console.log(this.$store.state.dials[i])
+        this.canvas.add(this.$store.state.dials[i])
+    }
 
-    this.pulseBorder(dial)
+    //this.pulseBorder(dial)
     
   },
   methods: {

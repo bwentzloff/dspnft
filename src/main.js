@@ -5,12 +5,17 @@ import App from './App.vue'
 const store = createStore({
     state () {
       return {
-        count: 0
+        count: 0,
+        dials: []
       }
     },
     mutations: {
       increment (state) {
         state.count++
+      },
+      pushDial (state, dial) {
+        state.dials = []
+        state.dials.push(dial.group)
       },
       initialiseStore(state) {
         // Check if the ID exists
