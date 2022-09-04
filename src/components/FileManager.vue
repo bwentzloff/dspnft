@@ -8,6 +8,7 @@
             </div>
         </a>
     </template>
+    <button @click="increment">Test</button>
   </div>
 </template>
 
@@ -24,6 +25,12 @@ export default {
             'test_file_2.dsp',
             'test_file_3.dsp'
         ]
+    }
+  },
+  methods: {
+    increment() {
+        this.$store.commit('increment')
+        console.log(this.$store.state.count)
     }
   }
 }
