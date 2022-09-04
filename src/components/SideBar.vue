@@ -25,6 +25,7 @@ export default {
   width: 15%;
   border: 1px solid;
   height: 100%;
+  float: left;
 }
 .sidebar img {
   width: 40%;

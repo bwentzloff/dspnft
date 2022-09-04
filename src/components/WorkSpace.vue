@@ -1,16 +1,19 @@
 <template>
   <div class="workspace">
         <side-bar></side-bar>
+        <canvas-container></canvas-container>
   </div>
 </template>
 
 <script>
 import SideBar from './SideBar.vue'
+import CanvasContainer from './CanvasContainer.vue'
 
 export default {
   name: 'WorkSpace',
   components: {
-    SideBar
+    SideBar,
+    CanvasContainer
   },
   props: {
     msg: String
