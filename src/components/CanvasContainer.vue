@@ -1,5 +1,5 @@
 <template>
-    <div class="canvas-container">
+    <div class="canvas-container-parent">
         <div class="tabset">
             <!-- Tab 1 -->
             <input type="radio" name="tabset" id="tab1" aria-controls="File1" checked>
@@ -13,7 +13,7 @@
             
             <div class="tab-panels">
                 <section id="File1" class="tab-panel">
-                    <canvas id="canvas" width="300" height="300"></canvas>
+                    <canvas id="canvas"></canvas>
                 </section>
                 <section id="File2" class="tab-panel">
                     <h2>Hello, World 2</h2>
@@ -38,27 +38,62 @@ export default {
   data() {
     return {
       canvas: "",
+      dials: []
     };
   },
   mounted() {
-    this.canvas = new fabric.Canvas('canvas');
+    this.canvas = new fabric.Canvas('canvas', { width: 900, height: 600 });
 
-    var rect = new fabric.Rect({
-        top : 100,
-        left : 100,
-        width : 60,
-        height : 70,
-        fill : 'red'
+    var dial = new fabric.Circle({
+        radius : 50,
+        fill : 'grey',
+        stroke: '#aaf',
+        strokeWidth: 5,
     });
-    this.canvas.add(rect);
+    var label = new fabric.Text('variable1', {
+        fontSize: 12,
+        left: 20,
+        top: 80
+    });
+    var group = new fabric.Group([ dial, label ], {
+        left: 0,
+        top: 0,
+        width: 100,
+        height: 100,
+        originX: 'left',
+        originY: 'top'
+    });
+
+    this.canvas.add(group);
+
+    this.pulseBorder(dial)
+    
+  },
+  methods: {
+    pulseBorder(dial_instance) {
+        var self = this
+        dial_instance.animate('strokeWidth', dial_instance.strokeWidth === 10 ? 1 : 10, {
+            duration: 500,
+            onChange: this.canvas.renderAll.bind(this.canvas),
+            onComplete: function() {
+                self.pulseBorder(dial_instance)
+            },
+        });
+    }
   }
 };
 </script>
 
 
 <style scoped>
-.canvas-container {
+#canvas {
+    width: 100%;
+    height: 100%;
+    border: 1px solid;
+}
+.canvas-container-parent {
     width: 84%;
+    height: 100%;
     float: left;
     text-align: left;
 }
