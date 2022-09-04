@@ -13,8 +13,7 @@
             
             <div class="tab-panels">
                 <section id="File1" class="tab-panel">
-                    <h2>Hello, World 1</h2>
-                    <p>Test</p>
+                    <canvas id="canvas" width="300" height="300"></canvas>
                 </section>
                 <section id="File2" class="tab-panel">
                     <h2>Hello, World 2</h2>
@@ -30,6 +29,32 @@
         </div>
     </div>
 </template>
+
+<script>
+import { fabric } from "fabric";
+
+export default {
+  name: "CanvasContainer",
+  data() {
+    return {
+      canvas: "",
+    };
+  },
+  mounted() {
+    this.canvas = new fabric.Canvas('canvas');
+
+    var rect = new fabric.Rect({
+        top : 100,
+        left : 100,
+        width : 60,
+        height : 70,
+        fill : 'red'
+    });
+    this.canvas.add(rect);
+  }
+};
+</script>
+
 
 <style scoped>
 .canvas-container {
