@@ -10,7 +10,7 @@
             <!-- Tab 3 -->
             <input type="radio" name="tabset" id="tab3" aria-controls="File3">
             <label for="tab3">File3.component</label>
-            
+            <button @click="playComposition()">Test Audio</button>
             <div class="tab-panels">
                 <section id="File1" class="tab-panel">
                     <canvas id="canvas"></canvas>
@@ -32,6 +32,7 @@
 
 <script>
 import { fabric } from "fabric";
+import * as Tone from 'tone'
 
 export default {
   name: "CanvasContainer",
@@ -42,40 +43,45 @@ export default {
     };
   },
   mounted() {
-    this.canvas = new fabric.Canvas('canvas', { width: 900, height: 600 });
-
-    var dial = new fabric.Circle({
-        radius : 50,
-        fill : 'grey',
-        stroke: '#aaf',
-        strokeWidth: 5,
-    });
-    var label = new fabric.Text('variable1', {
-        fontSize: 12,
-        left: 20,
-        top: 80
-    });
-    var group = new fabric.Group([ dial, label ], {
-        left: 0,
-        top: 0,
-        width: 100,
-        height: 100,
-        originX: 'left',
-        originY: 'top'
-    });
-    this.$store.commit('pushDial', 
-        {'group': group}
-    );
-
-    for (var i = 0; i < this.$store.state.dials.length; i++) {
-        console.log(this.$store.state.dials[i])
-        this.canvas.add(this.$store.state.dials[i])
-    }
-
-    //this.pulseBorder(dial)
+      this.drawTestCanvas()
+    
     
   },
   methods: {
+    drawTestCanvas() {
+      this.canvas = new fabric.Canvas('canvas', { width: 900, height: 600 });
+
+      var dial = new fabric.Circle({
+          radius : 50,
+          fill : 'grey',
+          stroke: '#aaf',
+          strokeWidth: 5,
+      });
+      var label = new fabric.Text('variable1', {
+          fontSize: 12,
+          left: 20,
+          top: 80
+      });
+      var group = new fabric.Group([ dial, label ], {
+          left: 0,
+          top: 0,
+          width: 100,
+          height: 100,
+          originX: 'left',
+          originY: 'top'
+      });
+      this.$store.commit('pushDial', 
+          {'group': group}
+      );
+      
+      // TODO: These dials are being stored in localStorage as key/value pairs. Instead of storing the Dial object in localStorage, store only the settings for them and rebuild the objects on loading from localStorage
+
+      for (var i = 0; i < this.$store.state.dials.length; i++) {
+          this.canvas.add(this.$store.state.dials[i])
+      }
+
+      //this.pulseBorder(dial)
+    },
     pulseBorder(dial_instance) {
         var self = this
         dial_instance.animate('strokeWidth', dial_instance.strokeWidth === 10 ? 1 : 10, {
@@ -85,6 +91,16 @@ export default {
                 self.pulseBorder(dial_instance)
             },
         });
+    },
+    playComposition() {
+        for (var i = 0; i < this.$store.state.dials.length; i++) {
+          const synth = new Tone.Synth().toDestination();
+          const now = Tone.now()
+          // trigger the attack immediately
+          synth.triggerAttack("C4", now)
+          // wait one second before triggering the release
+          synth.triggerRelease(now + 1)
+        }
     }
   }
 };
