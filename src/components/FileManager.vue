@@ -9,10 +9,13 @@
         </a>
     </template>
     <button @click="increment">Test</button>
+    <button @click="testTone">Test Tone</button>
   </div>
 </template>
 
 <script>
+import * as Tone from 'tone'
+
 export default {
   name: 'FileManager',
   props: {
@@ -31,6 +34,14 @@ export default {
     increment() {
         this.$store.commit('increment')
         console.log(this.$store.state.count)
+    },
+    testTone() {
+        const synth = new Tone.Synth().toDestination();
+        const now = Tone.now()
+        // trigger the attack immediately
+        synth.triggerAttack("C4", now)
+        // wait one second before triggering the release
+        synth.triggerRelease(now + 1)
     }
   }
 }
