@@ -11,6 +11,8 @@
             <input type="radio" name="tabset" id="tab3" aria-controls="File3">
             <label for="tab3">File3.component</label>
             <button @click="playComposition()">Test Audio</button>
+            <button @click="addDial()">Add Dial</button>
+            <button @click="showInfo()">Show Info</button>
             <div class="tab-panels">
                 <section id="File1" class="tab-panel">
                     <canvas id="canvas"></canvas>
@@ -39,45 +41,61 @@ export default {
   data() {
     return {
       canvas: "",
-      dials: []
+      dials: [],
+      isObjMoving : false
     };
   },
   mounted() {
       this.drawTestCanvas()
-    
-    
   },
   methods: {
+    updateComponentCoords() {
+        for (var i = 0; i < this.$store.state.dials.length; i++) {
+            this.$store.state.dials[i].left = this.$store.state.dials[i].object.left
+            this.$store.state.dials[i].top = this.$store.state.dials[i].object.top
+        }
+        this.$store.commit('updateDialCoords', 
+            {'dials': this.$store.state.dials[i]}
+        );
+    },
     drawTestCanvas() {
       this.canvas = new fabric.Canvas('canvas', { width: 900, height: 600 });
-
-      var dial = new fabric.Circle({
-          radius : 50,
-          fill : 'grey',
-          stroke: '#aaf',
-          strokeWidth: 5,
+      var self = this
+      this.canvas.on('object:moving', function() {
+        self.isObjMoving = true
       });
-      var label = new fabric.Text('variable1', {
-          fontSize: 12,
-          left: 20,
-          top: 80
-      });
-      var group = new fabric.Group([ dial, label ], {
-          left: 0,
-          top: 0,
-          width: 100,
-          height: 100,
-          originX: 'left',
-          originY: 'top'
-      });
-      this.$store.commit('pushDial', 
-          {'group': group}
-      );
       
-      // TODO: These dials are being stored in localStorage as key/value pairs. Instead of storing the Dial object in localStorage, store only the settings for them and rebuild the objects on loading from localStorage
+      this.canvas.on('mouse:up', function() {
+        if (self.isObjMoving) {
+          self.isObjMoving = false
+          self.updateComponentCoords()
+        }
+      })
 
       for (var i = 0; i < this.$store.state.dials.length; i++) {
-          this.canvas.add(this.$store.state.dials[i])
+        if (this.$store.state.dials[i].type == 'generator') {
+          var dial = new fabric.Circle({
+              radius : 50,
+              fill : 'grey',
+              stroke: '#aaf',
+              strokeWidth: 5,
+          });
+          var label = new fabric.Text('variable1', {
+              fontSize: 12,
+              left: 20,
+              top: 80
+          });
+          var group = new fabric.Group([ dial, label ], {
+              left: this.$store.state.dials[i].left,
+              top: this.$store.state.dials[i].top,
+              width: 100,
+              height: 100,
+              originX: 'left',
+              originY: 'top'
+          });
+          this.$store.state.dials[i].object = group
+          this.canvas.add(this.$store.state.dials[i].object)
+        }
       }
 
       //this.pulseBorder(dial)
@@ -101,7 +119,22 @@ export default {
           // wait one second before triggering the release
           synth.triggerRelease(now + 1)
         }
-    }
+    },
+    addDial() {
+        const stats = {
+          'left':0,
+          'top':0,
+          'type':'generator'
+        }
+        this.$store.commit('pushDial', 
+            {'stats': stats}
+        );
+    },
+    showInfo() {
+        for (var i = 0; i < this.$store.state.dials.length; i++) {
+            console.log(this.$store.state.dials[i])
+        }
+    },
   }
 };
 </script>

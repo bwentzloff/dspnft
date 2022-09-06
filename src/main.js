@@ -14,8 +14,12 @@ const store = createStore({
         state.count++
       },
       pushDial (state, dial) {
-        state.dials = []
-        state.dials.push(dial.group)
+        state.dials.push(dial.stats)
+      },
+      updateDialCoords ( state, dials) {
+        for (var i =0; i < dials.length; i++) {
+          state.dials.push(dials[i])
+        }
       },
       initialiseStore(state) {
         // Check if the ID exists
