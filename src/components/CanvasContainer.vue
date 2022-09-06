@@ -13,6 +13,7 @@
             <button @click="playComposition()">Test Audio</button>
             <button @click="addDial()">Add Dial</button>
             <button @click="showInfo()">Show Info</button>
+            <button @click="deleteAll()">Delete All</button>
             <div class="tab-panels">
                 <section id="File1" class="tab-panel">
                     <canvas id="canvas"></canvas>
@@ -95,6 +96,26 @@ export default {
           });
           this.$store.state.dials[i].object = group
           this.canvas.add(this.$store.state.dials[i].object)
+          for (var c=0;c<this.$store.state.dials[i].connections.length;c++) {
+              for (var cto=0;cto<this.$store.state.dials.length;cto++) {
+                  if (this.$store.state.dials[cto].id == this.$store.state.dials[i].connections[c]) {
+                    var coords = []
+                    coords.push(this.$store.state.dials[i].object.left)
+                    coords.push(this.$store.state.dials[i].object.top)
+                    coords.push(this.$store.state.dials[cto].object.left)
+                    coords.push(this.$store.state.dials[cto].object.top)
+                    var line = new fabric.Line(coords, {
+                      fill: 'red',
+                      stroke: 'red',
+                      strokeWidth: 5,
+                      selectable: false,
+                      evented: false,
+                    });
+                    this.canvas.add(line)
+                  }
+              }
+          }
+          
         }
       }
 
@@ -124,16 +145,27 @@ export default {
         const stats = {
           'left':0,
           'top':0,
-          'type':'generator'
+          'type':'generator',
+          'connections': [
+              1
+          ]
         }
         this.$store.commit('pushDial', 
             {'stats': stats}
         );
+        this.canvas.clear()
+        this.canvas.renderAll()
+    },
+    deleteAll() {
+        this.$store.commit('deleteAllDials');
+        this.canvas.clear()
+        this.canvas.renderAll()
     },
     showInfo() {
         for (var i = 0; i < this.$store.state.dials.length; i++) {
             console.log(this.$store.state.dials[i])
         }
+        console.log(this.$store.state.count)
     },
   }
 };

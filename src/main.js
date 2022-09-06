@@ -14,7 +14,9 @@ const store = createStore({
         state.count++
       },
       pushDial (state, dial) {
+        dial.stats.id = state.count
         state.dials.push(dial.stats)
+        state.count++
       },
       updateDialCoords ( state, dials) {
         for (var i =0; i < dials.length; i++) {
@@ -29,6 +31,10 @@ const store = createStore({
                 Object.assign(state, JSON.parse(localStorage.getItem('store')))
             );
         }
+      },
+      deleteAllDials(state) {
+        state.dials = []
+        state.count = 0
       }
     }
   })
