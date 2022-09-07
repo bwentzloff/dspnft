@@ -7,7 +7,7 @@ const store = createStore({
       return {
         count: 0,
         dials: [],
-        selectComponent: 0
+        selectedComponent: 0
       }
     },
     mutations: {
@@ -39,6 +39,13 @@ const store = createStore({
       deleteAllDials(state) {
         state.dials = []
         state.count = 0
+      },
+      makeConnection(state, items) {
+        for (var i=0; i < state.dials.length; i++) {
+          if (state.dials[i].id == items.source) {
+            state.dials[i].connections.push(items.dest)
+          }
+        }
       }
     }
   })

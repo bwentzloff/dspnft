@@ -16,6 +16,7 @@
             <button @click="deleteAll()">Delete All</button>
             <div class="tab-panels">
                 <section id="File1" class="tab-panel">
+                    <input type="checkbox" v-model="connectMode" />Connection mode
                     <canvas id="canvas"></canvas>
                 </section>
                 <section id="File2" class="tab-panel">
@@ -48,11 +49,12 @@ export default {
     return {
       canvas: "",
       dials: [],
-      isObjMoving : false
+      isObjMoving : false,
+      connectMode: false
     };
   },
   mounted() {
-      this.drawTestCanvas()
+      this.initializeCanvas()
   },
   methods: {
     updateComponentCoords() {
@@ -64,7 +66,7 @@ export default {
             {'dials': this.$store.state.dials[i]}
         );
     },
-    drawTestCanvas() {
+    initializeCanvas() {
       this.canvas = new fabric.Canvas('canvas', { width: 800, height: 600 });
       var self = this
       this.canvas.on('object:moving', function() {
@@ -72,15 +74,34 @@ export default {
       });
       
       this.canvas.on('mouse:up', function(event) {
-        self.$store.commit('selectComponent', 
-            {'component': event.target.id}
-        );
+        if (event.target && 'id' in event.target) {
+          if (self.connectMode && self.$store.state.selectedComponent != null) {
+            self.$store.commit('makeConnection',
+              {
+                'source': self.$store.state.selectedComponent,
+                'dest': event.target.id
+              }
+            );
+            self.redrawCanvas()
+          } else {
+            self.$store.commit('selectComponent', 
+                {'component': event.target.id}
+            );
+          }
+        } else {
+          self.$store.commit('selectComponent', 
+              {'component': null}
+          );
+        }
         if (self.isObjMoving) {
           self.isObjMoving = false
           self.updateComponentCoords()
         }
       })
-
+      this.redrawCanvas()
+    },
+    redrawCanvas() {
+      this.canvas.clear()
       for (var i = 0; i < this.$store.state.dials.length; i++) {
         if (this.$store.state.dials[i].type == 'generator') {
           var dial = new fabric.Circle({
@@ -104,8 +125,13 @@ export default {
           });
           group.id = this.$store.state.dials[i].id
           this.$store.state.dials[i].object = group
-          this.canvas.add(this.$store.state.dials[i].object)
-          for (var c=0;c<this.$store.state.dials[i].connections.length;c++) {
+          this.canvas.add(this.$store.state.dials[i].object)          
+        }
+      }
+
+      // create connections
+      for ( i = 0; i < this.$store.state.dials.length; i++) {
+        for (var c=0;c<this.$store.state.dials[i].connections.length;c++) {
               for (var cto=0;cto<this.$store.state.dials.length;cto++) {
                   if (this.$store.state.dials[cto].id == this.$store.state.dials[i].connections[c]) {
                     var coords = [
@@ -125,11 +151,7 @@ export default {
                   }
               }
           }
-          
-        }
       }
-
-      //this.pulseBorder(dial)
     },
     pulseBorder(dial_instance) {
         var self = this
@@ -157,14 +179,13 @@ export default {
           'top':0,
           'type':'generator',
           'connections': [
-              1
+              
           ]
         }
         this.$store.commit('pushDial', 
             {'stats': stats}
         );
-        this.canvas.clear()
-        this.canvas.renderAll()
+        this.redrawCanvas()
     },
     deleteAll() {
         this.$store.commit('deleteAllDials');
