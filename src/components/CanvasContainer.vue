@@ -27,18 +27,23 @@
                     <p>Test</p>
                 </section>
                 
-            </div>
-            
+            </div>            
         </div>
     </div>
+    <component-details></component-details>
 </template>
 
 <script>
 import { fabric } from "fabric";
 import * as Tone from 'tone'
 
+import ComponentDetails from './ComponentDetails.vue'
+
 export default {
   name: "CanvasContainer",
+  components: {
+    ComponentDetails,
+  },
   data() {
     return {
       canvas: "",
@@ -60,13 +65,16 @@ export default {
         );
     },
     drawTestCanvas() {
-      this.canvas = new fabric.Canvas('canvas', { width: 900, height: 600 });
+      this.canvas = new fabric.Canvas('canvas', { width: 800, height: 600 });
       var self = this
       this.canvas.on('object:moving', function() {
         self.isObjMoving = true
       });
       
-      this.canvas.on('mouse:up', function() {
+      this.canvas.on('mouse:up', function(event) {
+        self.$store.commit('selectComponent', 
+            {'component': event.target.id}
+        );
         if (self.isObjMoving) {
           self.isObjMoving = false
           self.updateComponentCoords()
@@ -94,16 +102,18 @@ export default {
               originX: 'left',
               originY: 'top'
           });
+          group.id = this.$store.state.dials[i].id
           this.$store.state.dials[i].object = group
           this.canvas.add(this.$store.state.dials[i].object)
           for (var c=0;c<this.$store.state.dials[i].connections.length;c++) {
               for (var cto=0;cto<this.$store.state.dials.length;cto++) {
                   if (this.$store.state.dials[cto].id == this.$store.state.dials[i].connections[c]) {
-                    var coords = []
-                    coords.push(this.$store.state.dials[i].object.left)
-                    coords.push(this.$store.state.dials[i].object.top)
-                    coords.push(this.$store.state.dials[cto].object.left)
-                    coords.push(this.$store.state.dials[cto].object.top)
+                    var coords = [
+                      this.$store.state.dials[i].object.left+50,
+                      this.$store.state.dials[i].object.top+50,
+                      this.$store.state.dials[cto].object.left+50,
+                      this.$store.state.dials[cto].object.top+50
+                    ]
                     var line = new fabric.Line(coords, {
                       fill: 'red',
                       stroke: 'red',
@@ -179,7 +189,7 @@ export default {
     border: 1px solid;
 }
 .canvas-container-parent {
-    width: 84%;
+    width: 69%;
     height: 100%;
     float: left;
     text-align: left;

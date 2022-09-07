@@ -6,7 +6,8 @@ const store = createStore({
     state () {
       return {
         count: 0,
-        dials: []
+        dials: [],
+        selectComponent: 0
       }
     },
     mutations: {
@@ -31,6 +32,9 @@ const store = createStore({
                 Object.assign(state, JSON.parse(localStorage.getItem('store')))
             );
         }
+      },
+      selectComponent(state, componentId) {
+        state.selectedComponent = componentId.component
       },
       deleteAllDials(state) {
         state.dials = []
