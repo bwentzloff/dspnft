@@ -10,8 +10,8 @@ describe("TestContract", async () => {
     expect(await testContract.name()).to.equal("TestContract");
     expect(await testContract.symbol()).to.equal("TC");
   });
-  0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
-  it("Should mint new NFT when requested", async function () {
+
+  /* it("Should mint new NFT when requested", async function () {
     const TestContract = await hre.ethers.getContractFactory("TestContract");
     const testContract = await TestContract.deploy();
 
@@ -35,9 +35,5 @@ describe("TestContract", async () => {
 
 
 
-    /*     console.log(await testContract.createComponent('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266','https://game.example/item-id-8u5h2m.png'))
-    console.log(await testContract.createComponent('0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266','https://game.example/item-id-8u5h2m.png'))
- */    /* expect(await testContract.createComponent()).to.equal("TestContract");
-    expect(await testContract.symbol()).to.equal("TC"); */
-  });
+  }); */
 });

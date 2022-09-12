@@ -1,6 +1,7 @@
 async function main() {
     const TestContract = await hre.ethers.getContractFactory("TestContract");
-    const testContract = await TestContract.deploy("TestContract", "TC");
+    //const testContract = await TestContract.deploy("TestContract", "TC");
+    const testContract = await TestContract.deploy();
   
     await testContract.deployed();
   
